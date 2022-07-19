@@ -2,9 +2,11 @@ import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {RectButton} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Entypo';
+import {useUpdateChosenQuantity} from '../hooks/use-update-chosen-quantity';
 
 interface Props {
   data: {
+    id: string | null;
     image?: string | null;
     name?: string | null;
     unitPrice?: number;
@@ -13,6 +15,8 @@ interface Props {
 }
 
 const CharacterCard: React.FC<Props> = ({data}) => {
+  const {onIncreaseChosenQuantity, onDecreaseChosenQuantity} =
+    useUpdateChosenQuantity();
   return (
     <View style={styles.container}>
       {data.image && <Image source={{uri: data.image}} style={styles.image} />}
@@ -21,11 +25,13 @@ const CharacterCard: React.FC<Props> = ({data}) => {
         <Text style={styles.text}>{`U$ ${data.unitPrice}`}</Text>
       </View>
       <View style={styles.choseQuantityContainer}>
-        <RectButton>
+        <RectButton
+          onPress={onDecreaseChosenQuantity.bind(null, data.id as string)}>
           <Icon name="minus" size={24} color="#3D7199" />
         </RectButton>
         <Text style={styles.choseQuantityText}>{data.chosenQuantity}</Text>
-        <RectButton>
+        <RectButton
+          onPress={onIncreaseChosenQuantity.bind(null, data.id as string)}>
           <Icon name="plus" size={24} color="#3D7199" />
         </RectButton>
       </View>
