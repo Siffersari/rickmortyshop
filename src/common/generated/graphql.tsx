@@ -1,14 +1,10 @@
-import {gql} from '@apollo/client';
+import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends {[key: string]: unknown}> = {[K in keyof T]: T[K]};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -17,16 +13,18 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
 export enum CacheControlScope {
   Private = 'PRIVATE',
-  Public = 'PUBLIC',
+  Public = 'PUBLIC'
 }
 
 export type Character = {
   __typename?: 'Character';
+  chosenQuantity: Scalars['Int'];
   /** Time at which the character was created in the database. */
   created?: Maybe<Scalars['String']>;
   /** Episodes in which this character appeared. */
@@ -52,6 +50,7 @@ export type Character = {
   status?: Maybe<Scalars['String']>;
   /** The type or subspecies of the character. */
   type?: Maybe<Scalars['String']>;
+  unitPrice: Scalars['Int'];
 };
 
 export type Characters = {
@@ -155,97 +154,107 @@ export type Query = {
   locations?: Maybe<Locations>;
   /** Get a list of locations selected by ids */
   locationsByIds?: Maybe<Array<Maybe<Location>>>;
+  shoppingCart: ShoppingCart;
 };
+
 
 export type QueryCharacterArgs = {
   id: Scalars['ID'];
 };
+
 
 export type QueryCharactersArgs = {
   filter?: InputMaybe<FilterCharacter>;
   page?: InputMaybe<Scalars['Int']>;
 };
 
+
 export type QueryCharactersByIdsArgs = {
   ids: Array<Scalars['ID']>;
 };
 
+
 export type QueryEpisodeArgs = {
   id: Scalars['ID'];
 };
+
 
 export type QueryEpisodesArgs = {
   filter?: InputMaybe<FilterEpisode>;
   page?: InputMaybe<Scalars['Int']>;
 };
 
+
 export type QueryEpisodesByIdsArgs = {
   ids: Array<Scalars['ID']>;
 };
 
+
 export type QueryLocationArgs = {
   id: Scalars['ID'];
 };
+
 
 export type QueryLocationsArgs = {
   filter?: InputMaybe<FilterLocation>;
   page?: InputMaybe<Scalars['Int']>;
 };
 
+
 export type QueryLocationsByIdsArgs = {
   ids: Array<Scalars['ID']>;
 };
 
-export type GetCharactersQueryVariables = Exact<{[key: string]: never}>;
-
-export type GetCharactersQuery = {
-  __typename?: 'Query';
-  characters?: {
-    __typename: 'Characters';
-    results?: Array<{
-      __typename: 'Character';
-      id?: string | null;
-      name?: string | null;
-      image?: string | null;
-      species?: string | null;
-      origin?: {
-        __typename: 'Location';
-        id?: string | null;
-        name?: string | null;
-      } | null;
-      location?: {
-        __typename: 'Location';
-        id?: string | null;
-        name?: string | null;
-      } | null;
-    } | null> | null;
-  } | null;
+export type ShoppingCart = {
+  __typename?: 'ShoppingCart';
+  id: Scalars['ID'];
+  numActionFigures: Scalars['Int'];
+  totalPrice: Scalars['Int'];
 };
 
+export type CharacterDataFragment = { __typename: 'Character', id?: string | null, name?: string | null, unitPrice: number, chosenQuantity: number };
+
+export type GetCharactersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCharactersQuery = { __typename?: 'Query', characters?: { __typename: 'Characters', results?: Array<{ __typename: 'Character', image?: string | null, species?: string | null, id?: string | null, name?: string | null, unitPrice: number, chosenQuantity: number, origin?: { __typename: 'Location', id?: string | null, name?: string | null } | null, location?: { __typename: 'Location', id?: string | null, name?: string | null } | null } | null> | null } | null };
+
+export type GetShoppingCartQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetShoppingCartQuery = { __typename?: 'Query', shoppingCart: { __typename?: 'ShoppingCart', id: string, totalPrice: number, numActionFigures: number } };
+
+export const CharacterDataFragmentDoc = gql`
+    fragment characterData on Character {
+  id
+  __typename
+  name
+  unitPrice @client
+  chosenQuantity @client
+}
+    `;
 export const GetCharactersDocument = gql`
-  query GetCharacters {
-    characters {
-      __typename
-      results {
+    query GetCharacters {
+  characters {
+    __typename
+    results {
+      ...characterData
+      image
+      species
+      origin {
         id
         __typename
         name
-        image
-        species
-        origin {
-          id
-          __typename
-          name
-        }
-        location {
-          id
-          __typename
-          name
-        }
+      }
+      location {
+        id
+        __typename
+        name
       }
     }
   }
-`;
+}
+    ${CharacterDataFragmentDoc}`;
 
 /**
  * __useGetCharactersQuery__
@@ -262,47 +271,61 @@ export const GetCharactersDocument = gql`
  *   },
  * });
  */
-export function useGetCharactersQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetCharactersQuery,
-    GetCharactersQueryVariables
-  >,
-) {
-  const options = {...defaultOptions, ...baseOptions};
-  return Apollo.useQuery<GetCharactersQuery, GetCharactersQueryVariables>(
-    GetCharactersDocument,
-    options,
-  );
+export function useGetCharactersQuery(baseOptions?: Apollo.QueryHookOptions<GetCharactersQuery, GetCharactersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCharactersQuery, GetCharactersQueryVariables>(GetCharactersDocument, options);
+      }
+export function useGetCharactersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCharactersQuery, GetCharactersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCharactersQuery, GetCharactersQueryVariables>(GetCharactersDocument, options);
+        }
+export type GetCharactersQueryHookResult = ReturnType<typeof useGetCharactersQuery>;
+export type GetCharactersLazyQueryHookResult = ReturnType<typeof useGetCharactersLazyQuery>;
+export type GetCharactersQueryResult = Apollo.QueryResult<GetCharactersQuery, GetCharactersQueryVariables>;
+export const GetShoppingCartDocument = gql`
+    query GetShoppingCart {
+  shoppingCart @client {
+    id
+    totalPrice
+    numActionFigures
+  }
 }
-export function useGetCharactersLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetCharactersQuery,
-    GetCharactersQueryVariables
-  >,
-) {
-  const options = {...defaultOptions, ...baseOptions};
-  return Apollo.useLazyQuery<GetCharactersQuery, GetCharactersQueryVariables>(
-    GetCharactersDocument,
-    options,
-  );
-}
-export type GetCharactersQueryHookResult = ReturnType<
-  typeof useGetCharactersQuery
->;
-export type GetCharactersLazyQueryHookResult = ReturnType<
-  typeof useGetCharactersLazyQuery
->;
-export type GetCharactersQueryResult = Apollo.QueryResult<
-  GetCharactersQuery,
-  GetCharactersQueryVariables
->;
+    `;
 
-export interface PossibleTypesResultData {
-  possibleTypes: {
-    [key: string]: string[];
-  };
-}
-const result: PossibleTypesResultData = {
-  possibleTypes: {},
+/**
+ * __useGetShoppingCartQuery__
+ *
+ * To run a query within a React component, call `useGetShoppingCartQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetShoppingCartQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetShoppingCartQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetShoppingCartQuery(baseOptions?: Apollo.QueryHookOptions<GetShoppingCartQuery, GetShoppingCartQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetShoppingCartQuery, GetShoppingCartQueryVariables>(GetShoppingCartDocument, options);
+      }
+export function useGetShoppingCartLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetShoppingCartQuery, GetShoppingCartQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetShoppingCartQuery, GetShoppingCartQueryVariables>(GetShoppingCartDocument, options);
+        }
+export type GetShoppingCartQueryHookResult = ReturnType<typeof useGetShoppingCartQuery>;
+export type GetShoppingCartLazyQueryHookResult = ReturnType<typeof useGetShoppingCartLazyQuery>;
+export type GetShoppingCartQueryResult = Apollo.QueryResult<GetShoppingCartQuery, GetShoppingCartQueryVariables>;
+
+      export interface PossibleTypesResultData {
+        possibleTypes: {
+          [key: string]: string[]
+        }
+      }
+      const result: PossibleTypesResultData = {
+  "possibleTypes": {}
 };
-export default result;
+      export default result;
+    

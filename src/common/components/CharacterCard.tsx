@@ -1,10 +1,14 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {RectButton} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Entypo';
 
 interface Props {
   data: {
     image?: string | null;
     name?: string | null;
+    unitPrice?: number;
+    chosenQuantity?: number;
   };
 }
 
@@ -14,6 +18,16 @@ const CharacterCard: React.FC<Props> = ({data}) => {
       {data.image && <Image source={{uri: data.image}} style={styles.image} />}
       <View style={styles.details}>
         <Text style={styles.text}>{data.name}</Text>
+        <Text style={styles.text}>{`U$ ${data.unitPrice}`}</Text>
+      </View>
+      <View style={styles.choseQuantityContainer}>
+        <RectButton>
+          <Icon name="minus" size={24} color="#3D7199" />
+        </RectButton>
+        <Text style={styles.choseQuantityText}>{data.chosenQuantity}</Text>
+        <RectButton>
+          <Icon name="plus" size={24} color="#3D7199" />
+        </RectButton>
       </View>
     </View>
   );
@@ -38,6 +52,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   text: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  choseQuantityContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  choseQuantityText: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -2,9 +2,7 @@ query GetCharacters {
   characters {
     __typename
     results {
-      id
-      __typename
-      name
+      ...characterData
       image
       species
       origin {

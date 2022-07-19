@@ -1,7 +1,7 @@
 import {ApolloClient, ApolloLink} from '@apollo/client';
 import {errorLink} from './apollo/error-link';
 import {createHttpLink} from './apollo/http-link';
-import {localCache} from './apollo/local-cache';
+import {initialLocalCache, localCache} from './apollo/local-cache';
 
 export function createApolloClient() {
   const httpLink = createHttpLink();
@@ -15,3 +15,5 @@ export function createApolloClient() {
 
   return apolloClient;
 }
+
+initialLocalCache();
